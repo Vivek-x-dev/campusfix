@@ -1,0 +1,10 @@
+# Put YOUR real campus photos in this folder, then run:
+#
+#   python -m ai.evaluate_images --dir ai/dataset/real
+#
+# 1. Drop .jpg files here (phone captures of real issues).
+# 2. Edit manifest.json — one row per photo (see the 2 examples inside).
+# 3. Run the command above. Accuracy is measured on YOUR photos.
+#
+# Tip for the hackathon: 10-15 real photos taken around campus today
+# beats any downloaded dataset — judges trust photos they recognize.

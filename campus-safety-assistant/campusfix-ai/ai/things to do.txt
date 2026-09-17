@@ -1,0 +1,560 @@
+# CampusFix AI — AI Development Checklist
+
+## 🔴 P0 — MUST HAVE
+
+### 1. Image → Issue Classification
+
+ [ ] Accept image upload
+ [ ] Classify incident category
+ [ ] Support at least 5–7 categories
+
+   [ ] Electrical
+   [ ] Plumbing
+   [ ] Waste
+   [ ] Infrastructure
+   [ ] Furniture
+   [ ] RoadPavement
+   [ ] Other
+ [ ] Return confidence score
+ [ ] Add low-confidence fallback to `OtherUnknown`
+ [ ] Do not force a classification when confidence is too low
+
+Example output
+
+```json
+{
+  category Electrical,
+  confidence 0.93
+}
+```
+
+---
+
+### 2. AI Severity  Risk Assessment
+
+ [ ] Generate severity `LOW  MEDIUM  HIGH  CRITICAL`
+ [ ] Explain why the severity was assigned
+ [ ] Identify possible risk
+ [ ] Recommend immediate action
+ [ ] Recommend responsible department
+
+Example
+
+```json
+{
+  severity HIGH,
+  risk Possible electrical shock,
+  recommended_action Restrict access to the area,
+  department Electrical Maintenance
+}
+```
+
+---
+
+### 3. Structured AI Output
+
+ [ ] Force LLM response into JSON
+ [ ] Validate JSON with Pydantic
+ [ ] Reject malformed output
+ [ ] Add fallback values
+ [ ] Keep the schema consistent for the backend
+
+Target schema
+
+```json
+{
+  category Electrical,
+  confidence 0.93,
+  severity HIGH,
+  risk Possible electrical shock,
+  action Restrict access,
+  department Electrical Maintenance
+}
+```
+
+---
+
+### 4. Duplicate Incident Detection
+
+ [ ] Convert incident descriptions into embeddings
+ [ ] Store embeddings
+ [ ] Generate embedding for new incident
+ [ ] Compare against existing incidents
+ [ ] Use cosine similarity
+ [ ] Set a similarity threshold
+ [ ] Return matching incident ID
+ [ ] Show similarity percentage
+
+Example
+
+```text
+⚠ Possible Duplicate
+
+Existing Incident INC-018
+Similarity 91%
+Location Block B
+Issue Water leakage
+```
+
+---
+
+### 5. Confidence + Uncertainty
+
+ [ ] Store classification confidence
+ [ ] Show confidence to admin
+ [ ] Define a confidence threshold
+ [ ] Route low-confidence cases to human review
+ [ ] Never invent missing information
+ [ ] Clearly distinguish AI prediction from certainty
+
+Example
+
+```text
+AI Confidence 48%
+
+⚠ Manual verification required
+```
+
+---
+
+# 🟠 P1 — MAKES THE AI STRONG
+
+### 6. Multimodal Reasoning
+
+ [ ] Use image + description + location
+ [ ] Give all relevant context to the LLM
+ [ ] Let context influence severity
+ [ ] Test same image under different contexts
+
+Example
+
+```text
+Image Water leak
+
+Location A Electrical Lab
+Description Water leaking beside power outlet
+→ HIGH severity
+
+Location B Garden
+Description Small amount of water near plants
+→ Lower severity
+```
+
+---
+
+### 7. AI-Generated Incident Summary
+
+ [ ] Convert messy user text into a concise report
+ [ ] Remove unnecessary wording
+ [ ] Preserve important facts
+ [ ] Do not invent details
+
+Example
+
+```text
+Input
+There's some water dripping from the ceiling in block B near
+the computer room and it's getting worse.
+
+AI Summary
+Water leakage detected near the computer room in Block B.
+The issue appears to be worsening and may pose a slip hazard
+and equipment-damage risk.
+```
+
+---
+
+### 8. Automatic Department Assignment
+
+ [ ] Map incident to responsible department
+ [ ] Electrical → Electrical Maintenance
+ [ ] Water leak → Plumbing
+ [ ] Broken furniture → Facilities
+ [ ] Garbage → Sanitation
+ [ ] Road damage → Civil Works
+
+---
+
+### 9. Recommended Action
+
+ [ ] Tell the admin what should happen next
+ [ ] Generate an immediate action
+ [ ] Generate a responsible team
+ [ ] Generate priority
+
+Example
+
+```text
+Issue Exposed electrical wire
+
+Immediate Action
+Restrict access to the area.
+
+Responsible Team
+Electrical Maintenance.
+
+Priority
+HIGH
+```
+
+---
+
+### 10. Human-in-the-Loop
+
+ [ ] Automatically accept high-confidence predictions
+ [ ] Flag uncertain predictions
+ [ ] Allow admin to override AI result
+ [ ] Store final human decision
+ [ ] Use corrections for future model improvement
+
+Flow
+
+```text
+High confidence
+       ↓
+Automatic ticket
+
+Low confidence
+       ↓
+Human review
+```
+
+---
+
+# 🟡 P2 — IMPRESSIVE FEATURES
+
+### 11. Location-Aware Risk
+
+ [ ] Include building
+ [ ] Include floor
+ [ ] Include room
+ [ ] Include location type
+ [ ] Use location context during risk assessment
+
+---
+
+### 12. Similar Incident Intelligence
+
+ [ ] Search historical incidents
+ [ ] Find similar previous incidents
+ [ ] Identify recurring issues
+ [ ] Identify problematic locations
+ [ ] Show previous occurrences
+
+Example
+
+```text
+AI Insight
+
+Block B has had 7 water-leak reports
+in the last 30 days.
+```
+
+---
+
+### 13. Trend Detection
+
+ [ ] Count incidents by category
+ [ ] Count incidents by location
+ [ ] Compare current vs previous period
+ [ ] Identify increasing issue types
+ [ ] Generate simple AIdata insights
+
+Examples
+
+```text
+Electrical incidents ↑ 32% this month
+```
+
+```text
+Most problematic location
+Block B — 23 incidents
+```
+
+---
+
+### 14. Explainability
+
+ [ ] Show why AI classified the issue
+ [ ] Show why severity was assigned
+ [ ] Show important contributing factors
+ [ ] Avoid unexplained AI decisions
+
+Example
+
+```text
+Why HIGH
+
+• Electrical hazard detected
+• Exposed wiring visible
+• Located inside a laboratory
+• Potential risk to studentsstaff
+```
+
+---
+
+# 🟢 P3 — OPTIONAL WOW FEATURES
+
+### 15. AI Image Captioning
+
+ [ ] Generate visual description
+ [ ] Use caption as input for LLM reasoning
+
+Example
+
+```text
+An exposed electrical wire is visible next to
+a wall-mounted socket.
+```
+
+---
+
+### 16. OCR
+
+ [ ] Extract text from image
+ [ ] Detect roomlabequipment labels
+ [ ] Pass extracted text to AI
+
+Possible text
+
+```text
+Lab 304
+Danger
+Equipment ID EL-102
+```
+
+---
+
+### 17. Damage Severity
+
+ [ ] Estimate damage as
+
+   [ ] Minor
+   [ ] Moderate
+   [ ] Severe
+ [ ] Only make claims supported by the model
+
+---
+
+### 18. Natural Language Admin Query
+
+ [ ] Admin can ask questions in natural language
+ [ ] Convert question into database query
+ [ ] Return relevant incidents
+
+Example
+
+```text
+Show me all high-risk electrical incidents from this week.
+```
+
+---
+
+# 🧠 MODEL  AI ENGINEERING CHECKLIST
+
+## Vision Model
+
+ [ ] Use pretrained model
+ [ ] Avoid training from scratch
+ [ ] Keep inference fast
+ [ ] Record model version
+ [ ] Record confidence
+ [ ] Test on unseen images
+ [ ] Handle blurry images
+ [ ] Handle irrelevant images
+
+## LLM
+
+ [ ] Use structured JSON output
+ [ ] Keep prompts deterministic
+ [ ] Provide only relevant context
+ [ ] Validate output
+ [ ] Handle malformed responses
+ [ ] Handle API timeout
+ [ ] Handle API failure
+ [ ] Implement fallback behavior
+
+## Embeddings
+
+ [ ] Generate incident embeddings
+ [ ] Store embeddings
+ [ ] Compare new incidents with existing incidents
+ [ ] Use cosine similarity
+ [ ] Tune duplicate threshold
+ [ ] Test true duplicates and non-duplicates
+
+## API
+
+ [ ] `POST aianalyze`
+ [ ] `POST aiduplicate-check`
+ [ ] Validate request body
+ [ ] Validate response schema
+ [ ] Return predictable JSON
+ [ ] Add error handling
+ [ ] Log inference time
+
+---
+
+# 🧪 TESTING CHECKLIST
+
+Create a small test dataset
+
+ [ ] 5 Electrical images
+ [ ] 5 Plumbing images
+ [ ] 5 Waste images
+ [ ] 5 Infrastructure images
+ [ ] 5 Furniture images
+ [ ] 5 Othernegative images
+
+Test
+
+ [ ] Correct category
+ [ ] Confidence sensible
+ [ ] Correct severity
+ [ ] Duplicate detection works
+ [ ] Low-quality images handled
+ [ ] Unrelated images handled
+ [ ] Missing descriptions handled
+ [ ] Missing location handled
+ [ ] LLM failure handled
+ [ ] Human override works
+
+Important negative test
+
+```text
+Image Normal classroom
+
+Expected
+Other  Low Confidence
+```
+
+---
+
+# 📊 METRICS TO SHOW JUDGES
+
+### Classification
+
+ [ ] Accuracy
+ [ ] PrecisionRecall if possible
+ [ ] Confusion matrix if available
+
+### Duplicate Detection
+
+ [ ] Precision
+ [ ] Recall
+ [ ] Similarity threshold
+
+### Confidence
+
+ [ ] Percentage of low-confidence cases
+ [ ] Percentage routed to human review
+
+### Performance
+
+ [ ] Average inference time
+ [ ] Average API response time
+
+Example dashboard
+
+```text
+AI Accuracy 91%
+Duplicate Precision 89%
+Average Analysis Time 2.8 sec
+Human Review Rate 12%
+```
+
+Only show numbers you actually measure.
+
+---
+
+# 🏆 IDEAL AI PIPELINE
+
+```text
+                    IMAGE
+                      │
+                      ▼
+             ┌─────────────────┐
+             │ Computer Vision │
+             └────────┬────────┘
+                      │
+                      ▼
+           Category + Confidence
+                      │
+                      ▼
+        ┌─────────────────────────┐
+        │ Context + LLM Reasoning │
+        └────────────┬────────────┘
+                     │
+                     ▼
+        Severity + Risk + Action
+                     │
+                     ▼
+               Embedding Model
+                     │
+                     ▼
+             Duplicate Detection
+                     │
+                     ▼
+            ┌─────────────────┐
+            │ Confidence Check│
+            └────────┬────────┘
+                     │
+             ┌───────┴────────┐
+             ▼                ▼
+       High Confidence    Low Confidence
+             │                │
+             ▼                ▼
+      Auto-create ticket   Human Review
+```
+
+---
+
+# 🚀 3-DAY PRIORITY
+
+## DAY 1
+
+ [ ] Image classification
+ [ ] Confidence score
+ [ ] LLM severity analysis
+ [ ] Structured JSON
+ [ ] `POST aianalyze`
+
+## DAY 2
+
+ [ ] Embeddings
+ [ ] Duplicate detection
+ [ ] Context-aware reasoning
+ [ ] Human-review fallback
+ [ ] Test dataset
+
+## DAY 3
+
+ [ ] Explainability
+ [ ] Historical insights
+ [ ] Trend analysis
+ [ ] Performance optimization
+ [ ] Metrics
+ [ ] Demo polish
+
+---
+
+# 🚫 DO NOT WASTE TIME ON
+
+ [ ] Reinforcement learning
+ [ ] Custom CNN architecture
+ [ ] Fine-tuning a large LLM
+ [ ] Multi-agent architecture
+ [ ] Complex RAG
+ [ ] Huge vector database
+ [ ] Training a model from scratch
+ [ ] Kubernetes-based model serving unless already required
+
+---
+
+# 🎯 FINAL AI GOAL
+
+The AI should be able to say
+
+ I don't just recognize the problem. I understand the context, assess the risk, recommend the appropriate response, detect duplicate reports, explain my decision, and request human review when I'm uncertain.
+
+That should be the core AI story of the project.
