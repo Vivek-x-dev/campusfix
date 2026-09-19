@@ -1,5 +1,11 @@
 .env
 __pycache__/
 *.pyc
+.pytest_cache/
 uploads/
 ai/demo_report.html
+# runtime incident store (local data, rebuilt from seeds if missing)
+backend/app/incidents_store.json
+# frontend build + deps
+frontend/node_modules/
+frontend/dist/

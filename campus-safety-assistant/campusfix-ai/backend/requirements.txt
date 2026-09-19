@@ -1,13 +1,21 @@
-fastapi>=0.110
+# CampusFix AI backend — install with: pip install -r backend/requirements.txt
+# (run from the campusfix-ai/ folder)
+
+# --- core (imported at runtime; app won't start without these) ---
+fastapi>=0.111
 uvicorn[standard]>=0.29
 pydantic>=2.5
-python-multipart>=0.0.9
-pillow>=10.0
-numpy>=1.26
-httpx>=0.27
-python-dotenv>=1.0
-# optional (auto-used if installed):
-google-genai>=1.0
-# sentence-transformers>=2.5
-# pytesseract (needs tesseract binary)
-# pymongo>=4.6
+python-multipart>=0.0.9  # image upload (UploadFile/Form)
+pillow>=10.0             # vision preprocessing (ai/vision.py)
+python-dotenv>=1.0       # loads GEMINI_API_KEY etc. from .env (ai/__init__.py)
+
+# --- test / verify ---
+httpx>=0.27    # required by starlette TestClient (ai/verify_api.py)
+pytest>=8.0     # test suite: python -m pytest ai/tests -q
+
+# --- optional upgrades (auto-used if installed, safe fallback if not) ---
+google-genai>=1.0          # live Gemini vision + reasoning (offline heuristic mode without it)
+# pymongo>=4.6              # optional MongoDB (app runs file-backed without it)
+# sentence-transformers>=2.5  # better duplicate embeddings (hash fallback otherwise)
+# pytesseract               # OCR (needs tesseract binary; skipped if absent)
+# torch + transformers      # CLIP zero-shot vision (skipped if absent)

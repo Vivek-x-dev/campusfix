@@ -17,9 +17,11 @@ def summarize_trends(records: List[Dict], days: int = 30) -> List[Dict]:
 
     def _parse(r):
         try:
-            return datetime.fromisoformat(str(r.get("created_at", now.isoformat())))
+            dt = datetime.fromisoformat(str(r.get("created_at", now.isoformat())))
         except Exception:
             return now
+        # normalize: stored records may carry offset-aware ISO timestamps
+        return dt.replace(tzinfo=None) if dt.tzinfo is not None else dt
 
     recent = [r for r in records if _parse(r) >= cutoff]
     prev = [r for r in records if _parse(r) < cutoff]
