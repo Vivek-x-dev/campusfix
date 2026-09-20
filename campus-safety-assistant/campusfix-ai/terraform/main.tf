@@ -243,7 +243,14 @@ resource "aws_ecs_task_definition" "task" {
       portMappings = [{ containerPort = 8000, hostPort = 8000 }]
       environment = [
         { name = "GEMINI_API_KEY", value = var.gemini_api_key },
-        { name = "GEMINI_MODEL", value = "gemini-3.6-flash" }
+        { name = "GEMINI_MODEL", value = "gemini-3.6-flash" },
+        { name = "DATA_DIR", value = "/app/data" }
+      ]
+      mountPoints = [
+        {
+          sourceVolume  = "efs-data"
+          containerPath = "/app/data"
+        }
       ]
       logConfiguration = {
         logDriver = "awslogs"
@@ -255,6 +262,14 @@ resource "aws_ecs_task_definition" "task" {
       }
     }
   ])
+
+  volume {
+    name = "efs-data"
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.db_storage.id
+      transit_encryption = "ENABLED"
+    }
+  }
 }
 
 resource "aws_ecs_service" "service" {
@@ -281,4 +296,33 @@ resource "aws_ecs_service" "service" {
     container_name   = "backend"
     container_port   = 8000
   }
+}
+
+# ==========================================
+# EFS FOR PERSISTENT DATABASE STORAGE
+# ==========================================
+resource "aws_efs_file_system" "db_storage" {
+  creation_token = "${var.project_name}-db-storage"
+  encrypted      = true
+  tags = { Name = "${var.project_name}-efs" }
+}
+
+resource "aws_security_group" "efs_sg" {
+  name        = "${var.project_name}-efs-sg"
+  description = "Allow NFS traffic from ECS"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = 2049
+    to_port         = 2049
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+}
+
+resource "aws_efs_mount_target" "efs_mt" {
+  count           = 2
+  file_system_id  = aws_efs_file_system.db_storage.id
+  subnet_id       = aws_subnet.public[count.index].id
+  security_groups = [aws_security_group.efs_sg.id]
 }

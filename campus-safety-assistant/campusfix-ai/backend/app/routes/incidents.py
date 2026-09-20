@@ -10,9 +10,13 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from ..models.incident import Incident, STATUSES
 from ..services import ai_service, duplicate_service
 
+import os
+
 router = APIRouter()
 
-STORE_PATH = Path(__file__).resolve().parent.parent / "incidents_store.json"
+# Use DATA_DIR env var for persistent storage, otherwise fallback to local dir
+data_dir = os.getenv("DATA_DIR", str(Path(__file__).resolve().parent.parent))
+STORE_PATH = Path(data_dir) / "incidents_store.json"
 
 SEED_STORE: List[dict] = [
     {"incident_id": "INC-018", "description": "Water leakage near Block B computer room, dripping from ceiling",
