@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowDown, ShieldCheck, Zap, ScanLine } from 'lucide-react'
+import { ArrowDown, ShieldCheck, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CanvasScene from '../components/CanvasScene'
 
