@@ -1,8 +1,7 @@
 /** Typed client for the CampusFix FastAPI backend. */
 
-export const API_BASE =
-  (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ||
-  'http://127.0.0.1:8000'
+const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
+export const API_BASE = envUrl !== undefined && envUrl !== '' ? envUrl : (import.meta.env.PROD ? '' : 'http://127.0.0.1:8000');
 
 export interface DuplicateMatch {
   incident_id: string
