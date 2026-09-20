@@ -326,3 +326,43 @@ resource "aws_efs_mount_target" "efs_mt" {
   subnet_id       = aws_subnet.public[count.index].id
   security_groups = [aws_security_group.efs_sg.id]
 }
+
+# ==========================================
+# API GATEWAY (FREE HTTPS PROXY)
+# ==========================================
+resource "aws_apigatewayv2_api" "https_proxy" {
+  name          = "${var.project_name}-https-proxy"
+  protocol_type = "HTTP"
+}
+
+resource "aws_apigatewayv2_integration" "alb_integration" {
+  api_id             = aws_apigatewayv2_api.https_proxy.id
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = "http://${aws_lb.alb.dns_name}/{proxy}"
+  integration_method = "ANY"
+}
+
+resource "aws_apigatewayv2_route" "default_route" {
+  api_id    = aws_apigatewayv2_api.https_proxy.id
+  route_key = "ANY /{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.alb_integration.id}"
+}
+
+resource "aws_apigatewayv2_stage" "default_stage" {
+  api_id      = aws_apigatewayv2_api.https_proxy.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+resource "aws_apigatewayv2_integration" "alb_integration_root" {
+  api_id             = aws_apigatewayv2_api.https_proxy.id
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = "http://${aws_lb.alb.dns_name}/"
+  integration_method = "ANY"
+}
+
+resource "aws_apigatewayv2_route" "root_route" {
+  api_id    = aws_apigatewayv2_api.https_proxy.id
+  route_key = "ANY /"
+  target    = "integrations/${aws_apigatewayv2_integration.alb_integration_root.id}"
+}

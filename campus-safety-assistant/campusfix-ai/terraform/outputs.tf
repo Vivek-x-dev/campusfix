@@ -13,3 +13,8 @@ output "ecr_backend_repository_url" {
   value       = aws_ecr_repository.backend.repository_url
 }
 
+
+output "api_gateway_https_url" {
+  description = "The free HTTPS URL provided by AWS API Gateway"
+  value       = aws_apigatewayv2_stage.default_stage.invoke_url
+}
