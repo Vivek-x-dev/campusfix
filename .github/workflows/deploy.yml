@@ -37,6 +37,7 @@ jobs:
           REPO: campusfix-frontend
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          cd campus-safety-assistant/campusfix-ai
           docker build --build-arg VITE_API_URL=/ -t $ECR_REGISTRY/$REPO:$IMAGE_TAG -t $ECR_REGISTRY/$REPO:latest -f frontend/Dockerfile frontend/
           docker push $ECR_REGISTRY/$REPO --all-tags
 
@@ -46,6 +47,7 @@ jobs:
           REPO: campusfix-backend
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          cd campus-safety-assistant/campusfix-ai
           docker build -t $ECR_REGISTRY/$REPO:$IMAGE_TAG -t $ECR_REGISTRY/$REPO:latest -f backend/Dockerfile .
           docker push $ECR_REGISTRY/$REPO --all-tags
 
