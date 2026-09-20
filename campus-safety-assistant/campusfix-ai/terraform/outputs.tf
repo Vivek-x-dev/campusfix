@@ -13,8 +13,3 @@ output "ecr_backend_repository_url" {
   value       = aws_ecr_repository.backend.repository_url
 }
 
-
-output "cloudfront_https_url" {
-  description = "The free HTTPS URL provided by AWS CloudFront"
-  value       = "https://${aws_cloudfront_distribution.cdn.domain_name}"
-}
